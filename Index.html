@@ -1,1 +1,412 @@
-<h1>Hello</h1>
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Japan Activity Selector</title>
+  <style>
+    :root{
+      --bg:#f8fafc;
+      --panel:#ffffff;
+      --text:#0f172a;
+      --muted:#64748b;
+      --line:#e2e8f0;
+      --accent:#2563eb;
+      --accent2:#0f766e;
+      --yes:#16a34a;
+      --no:#dc2626;
+      --fav:#f59e0b;
+      --shadow:0 12px 30px rgba(15,23,42,.08);
+      --radius:20px;
+    }
+    *{box-sizing:border-box}
+    html{scroll-behavior:smooth}
+    body{
+      margin:0;
+      font-family: Inter, system-ui, -apple-system, Segoe UI, Roboto, Helvetica, Arial, sans-serif;
+      background:linear-gradient(180deg,#eef2ff 0%,#f8fafc 28%,#f8fafc 100%);
+      color:var(--text);
+    }
+    .wrap{max-width:1220px;margin:0 auto;padding:16px}
+    .hero{
+      background:linear-gradient(135deg,#0f172a,#1d4ed8 55%,#0f766e);
+      color:#fff;
+      border-radius:28px;
+      padding:22px;
+      box-shadow:var(--shadow);
+      margin-bottom:16px;
+    }
+    .hero h1{margin:0 0 8px;font-size:clamp(24px,4vw,40px);line-height:1.1}
+    .hero p{margin:0;max-width:900px;color:#dbeafe;line-height:1.55}
+    .toolbar{
+      display:flex;flex-wrap:wrap;gap:10px;
+      margin:14px 0 16px;
+      position:sticky;top:0;z-index:10;
+      padding:10px 0;
+      backdrop-filter:blur(10px);
+    }
+    .select, .btn, .chip{
+      appearance:none;border:1px solid var(--line);background:#fff;color:var(--text);
+      border-radius:999px;padding:10px 14px;font-weight:700;cursor:pointer;
+      box-shadow:0 1px 0 rgba(0,0,0,.02);
+    }
+    .select{padding-right:36px}
+    .chip.active, .btn.active{background:#dbeafe;border-color:#bfdbfe;color:#1d4ed8}
+    .chip.secondary.active{background:#dcfce7;border-color:#bbf7d0;color:#166534}
+    .chip.warn.active{background:#fef3c7;border-color:#fde68a;color:#b45309}
+    .grid{
+      display:grid;
+      grid-template-columns:repeat(auto-fit,minmax(300px,1fr));
+      gap:16px;
+    }
+    .card{
+      background:var(--panel);
+      border:1px solid var(--line);
+      border-radius:var(--radius);
+      overflow:hidden;
+      box-shadow:var(--shadow);
+      display:flex;
+      flex-direction:column;
+      min-height:100%;
+    }
+    .img{
+      width:100%;
+      aspect-ratio:16/10;
+      background:#e2e8f0 center/cover no-repeat;
+    }
+    .content{padding:16px}
+    .title-row{
+      display:flex;justify-content:space-between;align-items:flex-start;gap:10px;margin-bottom:6px
+    }
+    h2{margin:0;font-size:20px;line-height:1.2}
+    .city{
+      font-size:12px;font-weight:800;color:#1d4ed8;background:#dbeafe;padding:6px 10px;border-radius:999px;white-space:nowrap
+    }
+    .desc{margin:8px 0 10px;color:#334155;line-height:1.5}
+    .why{
+      background:#f8fafc;border:1px solid var(--line);border-radius:14px;padding:12px;margin:12px 0 14px
+    }
+    .why strong{display:block;margin-bottom:6px}
+    .meta{
+      display:flex;gap:8px;flex-wrap:wrap;margin-top:8px
+    }
+    .actions{
+      display:flex;gap:10px;flex-wrap:wrap;margin-top:10px
+    }
+    .btn{
+      padding:10px 12px;line-height:1;
+    }
+    .btn.yes.active{background:rgba(22,163,74,.12);border-color:rgba(22,163,74,.26);color:var(--yes)}
+    .btn.no.active{background:rgba(220,38,38,.10);border-color:rgba(220,38,38,.22);color:var(--no)}
+    .btn.fav.active{background:rgba(245,158,11,.14);border-color:rgba(245,158,11,.25);color:#b45309}
+    .links{
+      display:flex;gap:10px;flex-wrap:wrap;margin-top:12px
+    }
+    .btn.link{text-decoration:none;display:inline-flex;align-items:center}
+    .summary{
+      margin-top:18px;
+      background:#fff;border:1px solid var(--line);border-radius:24px;padding:18px;box-shadow:var(--shadow)
+    }
+    .summary h3{margin:0 0 10px;font-size:20px}
+    .summary-grid{
+      display:grid;
+      grid-template-columns:repeat(auto-fit,minmax(240px,1fr));
+      gap:10px;
+    }
+    .rank{
+      border:1px solid var(--line);border-radius:16px;padding:12px;background:#f8fafc
+    }
+    .rank-top{
+      display:flex;justify-content:space-between;gap:10px;align-items:flex-start;margin-bottom:6px
+    }
+    .rank strong{display:block}
+    .small{font-size:12px;color:var(--muted);line-height:1.45}
+    .footer{color:var(--muted);font-size:13px;line-height:1.5;margin:16px 4px 10px}
+    .legend{
+      display:flex;flex-wrap:wrap;gap:8px;margin-top:12px
+    }
+    .legend span{
+      font-size:12px;font-weight:800;border:1px solid var(--line);padding:6px 10px;border-radius:999px;background:#fff;color:#334155
+    }
+    @media (max-width:640px){
+      .wrap{padding:12px}
+      .content{padding:14px}
+      .hero{padding:18px;border-radius:22px}
+      .toolbar{padding-top:8px}
+    }
+  </style>
+</head>
+<body>
+  <!--
+  IMAGE CHECKLIST
+  Put these files in an /images folder next to this HTML file.
+  Use these exact filenames (or update the src paths below to match your files):
+
+  01 shibuya-crossing.jpg
+  02 sensoji.jpg
+  03 meiji-jingu.jpg
+  04 golden-gai.jpg
+  05 akihabara.jpg
+  06 imperial-palace-tokyo.jpg
+  07 kiyomizu-dera.jpg
+  08 arashiyama-bamboo-grove.jpg
+  09 fushimi-inari.jpg
+  10 gion-district.jpg
+  11 nara-deer-park.jpg
+  12 dotonbori-osaka.jpg
+  13 mt-fuji-kawaguchiko.jpg
+  14 miyajima-torii-gate.jpg
+  15 okonomiyaki.jpg
+  16 ginza-shopping.jpg
+  17 tsukiji-outer-market.jpg
+  18 philosophers-path.jpg
+  19 kyoto-imperial-palace.jpg
+  20 teamlab-digital-art.jpg
+  21 teamlab-borderless.jpg
+  22 tokyo-skytree.jpg
+  23 hakone.jpg
+  24 nishiki-market.jpg
+  25 himeji-castle.jpg
+  26 j-league-match.jpg
+  27 japanese-baseball.jpg
+  -->
+
+  <div class="wrap">
+    <section class="hero">
+      <h1>Japan Activity Selector</h1>
+      <p>Review each activity, choose who is voting, tap Yes or No, and mark favorites. The app keeps each person’s choices locally in the browser and shows a combined ranking at the end.</p>
+      <div class="legend">
+        <span>Mobile friendly</span>
+        <span>Local-first</span>
+        <span>Separate voting</span>
+        <span>Ranked favorites</span>
+      </div>
+    </section>
+
+    <div class="toolbar">
+      <select id="personSelect" class="select" aria-label="Select person">
+        <option value="wife">Wife</option>
+        <option value="son">Son</option>
+      </select>
+
+      <button class="chip active" id="showAllBtn">All activities</button>
+      <button class="chip secondary" id="showFavBtn">Favorites only</button>
+      <button class="chip warn" id="showRankBtn">Ranking</button>
+      <button class="chip" id="resetBtn">Reset all</button>
+    </div>
+
+    <div id="app" class="grid"></div>
+
+    <section class="summary">
+      <h3>Final ranking</h3>
+      <div id="summaryLine" class="small">No votes yet.</div>
+      <div id="ranking" class="summary-grid" style="margin-top:12px"></div>
+    </section>
+
+    <div class="footer">
+      Save this file as <code>index.html</code> and keep an <code>images/</code> folder in the same directory. The app uses browser localStorage, so each device keeps its own votes unless you manually combine them later or host the app online.
+    </div>
+  </div>
+
+<script>
+const activities = [
+  {name:"Shibuya Crossing", city:"Tokyo", desc:"A famous scramble crossing and a classic Tokyo photo stop.", why:"It is one of the most iconic urban scenes in Japan and gives your family an easy, high-energy Tokyo moment without a big time commitment.", img:"images/shibuya-crossing.jpg", links:[["Tokyo guide","https://www.gotokyo.org/en/spot/78/index.html"],["Commons image","https://commons.wikimedia.org/wiki/File:Shibuya_Scramble_Crossing_(30562491713).jpg"]]},
+  {name:"Sensō-ji Temple", city:"Tokyo", desc:"Tokyo’s oldest and most famous temple, with lanterns and traditional shopping streets.", why:"It is a simple, family-friendly way to experience classic Tokyo culture, history, and a very walkable temple district.", img:"images/sensoji.jpg", links:[["Tokyo guide","https://www.gotokyo.org/en/spot/44/index.html"],["Commons image","https://commons.wikimedia.org/wiki/File:Illuminated_Senso-ji_Temple_(4097296993).jpg"]]},
+  {name:"Meiji Jingu Shrine", city:"Tokyo", desc:"A peaceful shrine set in a forested park in central Tokyo.", why:"It offers a calm break from the city and is easy to enjoy even if you only have a short visit.", img:"images/meiji-jingu.jpg", links:[["Official shrine","https://www.meijijingu.or.jp/en/"],["Commons image","https://commons.wikimedia.org/wiki/File:Meiji_Jingu_7.JPG"]]},
+  {name:"Golden Gai", city:"Tokyo", desc:"A compact nightlife area with tiny themed bars and a retro atmosphere.", why:"It has a distinctive old-Tokyo feel, but it is better suited to adults and a short evening look rather than a family-focused stop.", img:"images/golden-gai.jpg", links:[["Tokyo guide","https://www.gotokyo.org/en/spot/1322/index.html"],["Wikipedia","https://en.wikipedia.org/wiki/Golden_Gai"]]},
+  {name:"Akihabara", city:"Tokyo", desc:"Tokyo’s hub for anime, games, electronics, and pop culture.", why:"It is a fun place if your family enjoys collectibles, games, or quirky shops, and it shows a side of modern Tokyo that is very different from the temples.", img:"images/akihabara.jpg", links:[["Tokyo guide","https://www.gotokyo.org/en/spot/31/index.html"],["Wikipedia","https://en.wikipedia.org/wiki/Akihabara"]]},
+  {name:"Imperial Palace", city:"Tokyo", desc:"The grounds around the emperor’s residence include gardens, moat views, and central Tokyo scenery.", why:"It is good for people who enjoy history, open space, and a quieter landmark setting.", img:"images/imperial-palace-tokyo.jpg", links:[["Official guide","https://www.kunaicho.go.jp/e-event/higashigyoen/higashigyoen.html"],["Wikipedia","https://en.wikipedia.org/wiki/Imperial_Palace,_Tokyo"]]},
+  {name:"Kiyomizu-dera", city:"Kyoto", desc:"A major Kyoto temple famous for its wooden stage and city views.", why:"It is one of Kyoto’s most iconic sights and usually feels worthwhile for first-time visitors.", img:"images/kiyomizu-dera.jpg", links:[["Official temple","https://www.kiyomizudera.or.jp/en/"],["Travel Japan","https://www.japan.travel/en/spot/2199/"]]},
+  {name:"Arashiyama Bamboo Grove", city:"Kyoto", desc:"A short bamboo-lined path that is scenic and photogenic.", why:"It is an easy, memorable stop, especially if you are already spending time in the Arashiyama area.", img:"images/arashiyama-bamboo-grove.jpg", links:[["Kyoto tourism","https://kyoto.travel/en/destinations/arashiyama.html"],["Wikipedia","https://en.wikipedia.org/wiki/Arashiyama"]]},
+  {name:"Fushimi Inari Torii Gates", city:"Kyoto", desc:"A trail of bright red shrine gates climbing a hillside.", why:"It is one of Japan’s most memorable sights, and your family can choose how far to walk based on energy and time.", img:"images/fushimi-inari.jpg", links:[["Kyoto tourism","https://kyoto.travel/en/destinations/fushimi-inari-taisha.html"],["Wikipedia","https://en.wikipedia.org/wiki/Fushimi_Inari-taisha"]]},
+  {name:"Gion District", city:"Kyoto", desc:"Kyoto’s historic geisha district with old streets and wooden buildings.", why:"It is a classic Kyoto evening stroll and gives a strong sense of traditional atmosphere.", img:"images/gion-district.jpg", links:[["Kyoto tourism","https://kyoto.travel/en/destinations/gion.html"],["Wikipedia","https://en.wikipedia.org/wiki/Gion"]]},
+  {name:"Nara Park / Deer", city:"Nara", desc:"A large park where friendly deer roam freely and visitors can feed them.", why:"It is especially fun for families and pairs well with nearby temples for a relaxed half-day.", img:"images/nara-deer-park.jpg", links:[["Nara tourism","https://www.visitnara.jp/"],["Wikipedia","https://en.wikipedia.org/wiki/Nara_Park"]]},
+  {name:"Osaka Dotonbori", city:"Osaka", desc:"A bright, energetic district known for neon signs and street food.", why:"It is a lively evening stop if your family enjoys crowds, food, and big-city energy.", img:"images/dotonbori-osaka.jpg", links:[["Osaka tourism","https://www.osaka-info.jp/en/"],["Wikipedia","https://en.wikipedia.org/wiki/D%C5%8Dtonbori"]]},
+  {name:"Mt Fuji / Kawaguchiko", city:"Kawaguchiko", desc:"One of the best places to see Mt. Fuji with lake views and a slower pace.", why:"It is a scenic change of pace from the big cities and works well as a half-day or full-day outing.", img:"images/mt-fuji-kawaguchiko.jpg", links:[["Travel Japan","https://www.japan.travel/en/spot/1864/"],["Wikipedia","https://en.wikipedia.org/wiki/Lake_Kawaguchi"]]},
+  {name:"Miyajima Torii Gate", city:"Miyajima", desc:"The famous floating torii gate is one of Japan’s most photographed landmarks.", why:"It is worth considering if you want a scenic island day trip and do not mind the travel time.", img:"images/miyajima-torii-gate.jpg", links:[["Travel Japan","https://www.japan.travel/en/spot/1753/"],["Wikipedia","https://en.wikipedia.org/wiki/Itsukushima_Shrine"]]},
+  {name:"Okonomiyaki", city:"Kyoto / Osaka", desc:"A savory Japanese pancake often cooked on a griddle in front of you.", why:"It is a tasty hands-on meal experience that can be fun and memorable for a family.", img:"images/okonomiyaki.jpg", links:[["Wikipedia","https://en.wikipedia.org/wiki/Okonomiyaki"],["Tokyo guide","https://www.gotokyo.org/en/story/guide/okonomiyaki/index.html"]]},
+  {name:"Ginza Shopping", city:"Tokyo", desc:"A polished shopping district with luxury stores and stylish streets.", why:"It is better if your family enjoys browsing, fashion, and a more upscale urban atmosphere.", img:"images/ginza-shopping.jpg", links:[["Tokyo guide","https://www.gotokyo.org/en/spot/26/index.html"],["Wikipedia","https://en.wikipedia.org/wiki/Ginza"]]},
+  {name:"Tsukiji Outer Market", city:"Tokyo", desc:"A lively market area known for seafood, snacks, and breakfast-style eating.", why:"It is a good fit for families who enjoy food walks and early-morning energy.", img:"images/tsukiji-outer-market.jpg", links:[["Tokyo guide","https://www.gotokyo.org/en/spot/33/index.html"],["Wikipedia","https://en.wikipedia.org/wiki/Tsukiji_Outer_Market"]]},
+  {name:"Philosopher’s Path", city:"Kyoto", desc:"A peaceful walking path along a canal in Kyoto.", why:"It is a gentle walk that feels especially nice if your family prefers calm scenery over major attractions.", img:"images/philosophers-path.jpg", links:[["Kyoto tourism","https://kyoto.travel/en/destinations/philosophers-path.html"],["Wikipedia","https://en.wikipedia.org/wiki/Philosopher%27s_Path"]]},
+  {name:"Kyoto Imperial Palace", city:"Kyoto", desc:"A broad palace area with gardens and historic grounds.", why:"It is a good option for people who enjoy history, formal grounds, and open space.", img:"images/kyoto-imperial-palace.jpg", links:[["Official guide","https://www.env.go.jp/garden/kyotogyoen/"],["Wikipedia","https://en.wikipedia.org/wiki/Kyoto_Imperial_Palace"]]},
+  {name:"TeamLab Digital Art", city:"Tokyo", desc:"Immersive digital art spaces with light, color, and interactive displays.", why:"It is very family-friendly and often a hit with both kids and adults.", img:"images/teamlab-digital-art.jpg", links:[["Official site","https://www.teamlab.art/"],["Wikipedia","https://en.wikipedia.org/wiki/TeamLab_Borderless"]]},
+  {name:"TeamLab Borderless", city:"Tokyo", desc:"A large immersive digital art museum with moving light installations and interactive rooms.", why:"It is one of the most memorable modern Tokyo experiences and usually appeals to all ages.", img:"images/teamlab-borderless.jpg", links:[["Official site","https://www.teamlab.art/e/tokyo/"],["Tokyo guide","https://www.gotokyo.org/en/spot/1742/index.html"]]},
+  {name:"Tokyo Skytree", city:"Tokyo", desc:"Japan’s tallest tower with panoramic city views and shopping below.", why:"It is a strong choice if your family wants a big skyline view and an easy landmark visit.", img:"images/tokyo-skytree.jpg", links:[["Official site","https://www.tokyo-skytree.jp/en/"],["Travel Japan","https://www.japan.travel/en/spot/1680/"]]},
+  {name:"Hakone", city:"Hakone", desc:"A scenic mountain-and-lake area known for hot springs, views, and relaxed sightseeing.", why:"It is a great break from city travel and works well as an overnight or day trip if you want something calmer.", img:"images/hakone.jpg", links:[["Hakone guide","https://www.japan.travel/en/destinations/kanto/kanagawa/hakone/"],["Wikipedia","https://en.wikipedia.org/wiki/Hakone"]]},
+  {name:"Nishiki Market", city:"Kyoto", desc:"Kyoto’s famous food market with snacks, street food, and local specialties.", why:"It is a fun choice for food lovers and is easy to combine with other central Kyoto sightseeing.", img:"images/nishiki-market.jpg", links:[["Official market","https://www.kyoto-nishiki.or.jp/en/"],["Travel Japan","https://www.japan.travel/en/spot/1174/"]]},
+  {name:"Himeji Castle", city:"Himeji", desc:"Japan’s famous white castle and a UNESCO World Heritage Site.", why:"It is one of the best preserved castles in Japan and a great option if your family enjoys history and iconic landmarks.", img:"images/himeji-castle.jpg", links:[["Official tourism","https://visit-himeji.com/en/sightseeing/himeji-castle/"],["Travel Japan","https://www.japan.travel/en/spot/1030/"]]},
+  {name:"J-League Match Experience", city:"Japan", desc:"A live Japanese soccer match with energetic crowds and a fun stadium atmosphere.", why:"It is an exciting way to experience local sports culture and can be especially fun if your family enjoys live events.", img:"images/j-league-match.jpg", links:[["J.League","https://www.jleague.co/"],["Wikipedia","https://en.wikipedia.org/wiki/J1_League"]]},
+  {name:"Japanese Baseball Game Experience", city:"Japan", desc:"A live baseball game with cheering, food, and a uniquely Japanese stadium atmosphere.", why:"It is one of the most enjoyable local experiences in Japan and can be a great family evening even for casual sports fans.", img:"images/japanese-baseball.jpg", links:[["NPB","https://npb.jp/eng/"],["Wikipedia","https://en.wikipedia.org/wiki/Nippon_Professional_Baseball"]]}
+];
+
+const personNames = {wife:"Wife", son:"Son"};
+const state = JSON.parse(localStorage.getItem('japan-picker-state') || '{}');
+let mode = 'all';
+
+function ensureState(activityName){
+  state[activityName] = state[activityName] || {wife:{}, son:{}};
+  state[activityName].wife = state[activityName].wife || {};
+  state[activityName].son = state[activityName].son || {};
+  return state[activityName];
+}
+function save(){ localStorage.setItem('japan-picker-state', JSON.stringify(state)); }
+function currentPerson(){ return document.getElementById('personSelect').value; }
+
+function setChoice(activityName, choice){
+  const p = currentPerson();
+  const s = ensureState(activityName);
+  s[p].choice = choice;
+  save();
+  render();
+}
+function toggleFav(activityName){
+  const p = currentPerson();
+  const s = ensureState(activityName);
+  s[p].fav = !s[p].fav;
+  save();
+  render();
+}
+
+function voteCount(activityName){
+  const s = ensureState(activityName);
+  let total = 0;
+  if(s.wife.choice === 'yes') total += 1;
+  if(s.son.choice === 'yes') total += 1;
+  return total;
+}
+function favCount(activityName){
+  const s = ensureState(activityName);
+  let total = 0;
+  if(s.wife.fav) total += 1;
+  if(s.son.fav) total += 1;
+  return total;
+}
+function personChoice(activityName, person){
+  const s = ensureState(activityName);
+  return s[person]?.choice || '';
+}
+function personFav(activityName, person){
+  const s = ensureState(activityName);
+  return !!s[person]?.fav;
+}
+
+function renderCards(){
+  const app = document.getElementById('app');
+  const person = currentPerson();
+  const list = mode === 'fav'
+    ? activities.filter(a => personFav(a.name, person))
+    : activities;
+
+  app.innerHTML = list.map(a => {
+    const yesActive = personChoice(a.name, person) === 'yes' ? 'active' : '';
+    const noActive = personChoice(a.name, person) === 'no' ? 'active' : '';
+    const favActive = personFav(a.name, person) ? 'active' : '';
+    const s = ensureState(a.name);
+    const votes = `${s.wife.choice === 'yes' ? 'Wife ✓' : 'Wife —'} · ${s.son.choice === 'yes' ? 'Son ✓' : 'Son —'}`;
+
+    return `
+      <article class="card">
+        <div class="img" style="background-image:url('${a.img}')"></div>
+        <div class="content">
+          <div class="title-row">
+            <h2>${a.name}</h2>
+            <div class="city">${a.city}</div>
+          </div>
+          <div class="small">${votes}</div>
+          <p class="desc">${a.desc}</p>
+          <div class="why">
+            <strong>Why consider it</strong>
+            <div>${a.why}</div>
+          </div>
+          <div class="actions">
+            <button class="btn yes ${yesActive}" onclick="setChoice('${escapeJs(a.name)}','yes')">Yes</button>
+            <button class="btn no ${noActive}" onclick="setChoice('${escapeJs(a.name)}','no')">No</button>
+            <button class="btn fav ${favActive}" onclick="toggleFav('${escapeJs(a.name)}')">Favorite</button>
+          </div>
+          <div class="links">
+            ${a.links.slice(0,2).map(l => `<a class="btn link" href="${l[1]}" target="_blank" rel="noopener">${l[0]}</a>`).join('')}
+          </div>
+        </div>
+      </article>
+    `;
+  }).join('');
+}
+
+function renderRanking(){
+  const ranking = document.getElementById('ranking');
+  const summaryLine = document.getElementById('summaryLine');
+  const person = currentPerson();
+
+  const ranked = activities
+    .map(a => {
+      const s = ensureState(a.name);
+      const wifeYes = s.wife.choice === 'yes' ? 1 : 0;
+      const sonYes = s.son.choice === 'yes' ? 1 : 0;
+      const wifeFav = s.wife.fav ? 1 : 0;
+      const sonFav = s.son.fav ? 1 : 0;
+      return { ...a, yesTotal: wifeYes + sonYes, favTotal: wifeFav + sonFav };
+    })
+    .filter(a => a.yesTotal > 0 || a.favTotal > 0)
+    .sort((a,b) => (b.favTotal - a.favTotal) || (b.yesTotal - a.yesTotal) || a.name.localeCompare(b.name));
+
+  const voted = ranked.reduce((acc,a) => acc + a.yesTotal, 0);
+  const favs = ranked.reduce((acc,a) => acc + a.favTotal, 0);
+
+  summaryLine.textContent = `${personNames[person]} is currently selected. Total yes votes recorded: ${voted}. Total favorite marks recorded: ${favs}.`;
+
+  ranking.innerHTML = ranked.length ? ranked.map((a, idx) => `
+    <div class="rank">
+      <div class="rank-top">
+        <strong>${idx+1}. ${a.name}</strong>
+        <span class="city">${a.city}</span>
+      </div>
+      <div class="small">Yes votes: ${a.yesTotal} · Favorites: ${a.favTotal}</div>
+      <div class="small" style="margin-top:6px">${a.desc}</div>
+    </div>
+  `).join('') : `<div class="small">Vote on activities to generate a ranking.</div>`;
+}
+
+function render(){
+  renderCards();
+  renderRanking();
+}
+
+function escapeJs(s){
+  return s.replace(/\\/g, '\\\\').replace(/'/g, "\\'");
+}
+
+document.getElementById('personSelect').addEventListener('change', render);
+
+document.getElementById('showAllBtn').onclick = () => {
+  mode = 'all';
+  document.getElementById('showAllBtn').classList.add('active');
+  document.getElementById('showFavBtn').classList.remove('active');
+  document.getElementById('showRankBtn').classList.remove('active');
+  render();
+};
+document.getElementById('showFavBtn').onclick = () => {
+  mode = 'fav';
+  document.getElementById('showFavBtn').classList.add('active');
+  document.getElementById('showAllBtn').classList.remove('active');
+  document.getElementById('showRankBtn').classList.remove('active');
+  render();
+};
+document.getElementById('showRankBtn').onclick = () => {
+  mode = 'rank';
+  document.getElementById('showRankBtn').classList.add('active');
+  document.getElementById('showAllBtn').classList.remove('active');
+  document.getElementById('showFavBtn').classList.remove('active');
+  render();
+  document.querySelector('.summary').scrollIntoView({behavior:'smooth', block:'start'});
+};
+document.getElementById('resetBtn').onclick = () => {
+  if(confirm('Reset all selections for both people?')){
+    localStorage.removeItem('japan-picker-state');
+    location.reload();
+  }
+};
+
+render();
+</script>
+</body>
+</html>
