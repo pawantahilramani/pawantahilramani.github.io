@@ -180,8 +180,8 @@
 
     <div class="toolbar">
       <select id="personSelect" class="select" aria-label="Select person">
-        <option value="wife">Wife</option>
-        <option value="son">Son</option>
+        <option value="Priti">Priti</option>
+        <option value="Yuvraj">Yuvraj</option>
       </select>
 
       <button class="chip active" id="showAllBtn">All activities</button>
@@ -231,14 +231,14 @@ const activities = [
   {name:"Himeji Castle", city:"Himeji", desc:"Japan’s famous white castle and a UNESCO World Heritage Site.", why:"It is one of the best preserved castles in Japan and a great option if your family enjoys history and iconic landmarks.", img:"images/himeji-castle.jpg", links:[["Official tourism","https://visit-himeji.com/en/sightseeing/himeji-castle/"],["Travel Japan","https://www.japan.travel/en/spot/1030/"]]}
 ];
 
-const personNames = {wife:"Wife", son:"Son"};
+const personNames = {Priti:"Priti", Yuvraj:"Yuvraj"};
 const state = JSON.parse(localStorage.getItem('japan-picker-state') || '{}');
 let mode = 'all';
 
 function ensureState(activityName){
-  state[activityName] = state[activityName] || {wife:{}, son:{}};
-  state[activityName].wife = state[activityName].wife || {};
-  state[activityName].son = state[activityName].son || {};
+  state[activityName] = state[activityName] || {Priti:{}, Yuvraj:{}};
+  state[activityName].Priti = state[activityName].Priti || {};
+  state[activityName].Yuvraj = state[activityName].Yuvraj || {};
   return state[activityName];
 }
 function save(){ localStorage.setItem('japan-picker-state', JSON.stringify(state)); }
@@ -262,15 +262,15 @@ function toggleFav(activityName){
 function voteCount(activityName){
   const s = ensureState(activityName);
   let total = 0;
-  if(s.wife.choice === 'yes') total += 1;
-  if(s.son.choice === 'yes') total += 1;
+  if(s.Priti.choice === 'yes') total += 1;
+  if(s.Yuvraj.choice === 'yes') total += 1;
   return total;
 }
 function favCount(activityName){
   const s = ensureState(activityName);
   let total = 0;
-  if(s.wife.fav) total += 1;
-  if(s.son.fav) total += 1;
+  if(s.Priti.fav) total += 1;
+  if(s.Yuvraj.fav) total += 1;
   return total;
 }
 function personChoice(activityName, person){
@@ -294,7 +294,7 @@ function renderCards(){
     const noActive = personChoice(a.name, person) === 'no' ? 'active' : '';
     const favActive = personFav(a.name, person) ? 'active' : '';
     const s = ensureState(a.name);
-    const votes = `${s.wife.choice === 'yes' ? 'Wife ✓' : 'Wife —'} · ${s.son.choice === 'yes' ? 'Son ✓' : 'Son —'}`;
+    const votes = `${s.Priti.choice === 'yes' ? 'Priti ✓' : 'Priti —'} · ${s.Yuvraj.choice === 'yes' ? 'Yuvraj ✓' : 'Yuvraj —'}`;
 
     return `
       <article class="card">
@@ -332,11 +332,11 @@ function renderRanking(){
   const ranked = activities
     .map(a => {
       const s = ensureState(a.name);
-      const wifeYes = s.wife.choice === 'yes' ? 1 : 0;
-      const sonYes = s.son.choice === 'yes' ? 1 : 0;
-      const wifeFav = s.wife.fav ? 1 : 0;
-      const sonFav = s.son.fav ? 1 : 0;
-      return { ...a, yesTotal: wifeYes + sonYes, favTotal: wifeFav + sonFav };
+      const PritiYes = s.Priti.choice === 'yes' ? 1 : 0;
+      const YuvrajYes = s.Yuvraj.choice === 'yes' ? 1 : 0;
+      const PritiYes = s.Priti.fav ? 1 : 0;
+      const YuvrajYes = s.Yuvraj.fav ? 1 : 0;
+      return { ...a, yesTotal: PritiYes + YuvrajYes, favTotal: PritiFav + YuvrajFav };
     })
     .filter(a => a.yesTotal > 0 || a.favTotal > 0)
     .sort((a,b) => (b.favTotal - a.favTotal) || (b.yesTotal - a.yesTotal) || a.name.localeCompare(b.name));
