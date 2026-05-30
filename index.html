@@ -3,7 +3,7 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>Japan Activity Selector</title>
+  <title>Japan Activity Selection</title>
   <style>
     :root{
       --bg:#f8fafc;
@@ -137,57 +137,23 @@
   </style>
 </head>
 <body>
-  <!--
-  IMAGE CHECKLIST
-  Put these files in an /images folder next to this HTML file.
-  Use these exact filenames (or update the src paths below to match your files):
-
-  01 shibuya-crossing.jpg
-  02 sensoji.jpg
-  03 meiji-jingu.jpg
-  04 golden-gai.jpg
-  05 akihabara.jpg
-  06 imperial-palace-tokyo.jpg
-  07 kiyomizu-dera.jpg
-  08 arashiyama-bamboo-grove.jpg
-  09 fushimi-inari.jpg
-  10 gion-district.jpg
-  11 nara-deer-park.jpg
-  12 dotonbori-osaka.jpg
-  14 miyajima-torii-gate.jpg
-  16 ginza-shopping.jpg
-  17 tsukiji-outer-market.jpg
-  18 philosophers-path.jpg
-  19 kyoto-imperial-palace.jpg
-  20 teamlab-planets.jpg
-  21 teamlab-borderless.jpg
-  22 tokyo-skytree.jpg
-  23 hakone.jpg
-  24 nishiki-market.jpg
-  25 himeji-castle.jpg
-  -->
-
   <div class="wrap">
     <section class="hero">
       <h1>Japan Activity Selector</h1>
-      <p>Choose who is voting, review each activity, tap Yes or No, and mark favorites.</p>
-      <div class="legend">
-        <span>Mobile Friendly</span>
-        <span>Separate Voting</span>
-        <span>Ranked Favorites</span>
-      </div>
+      <p>Choose WHO is voting, review EACH activity, tap YES or NO, and mark your FAVOURITES.</p>
     </section>
 
     <div class="toolbar">
       <select id="personSelect" class="select" aria-label="Select person">
-        <option value="Priti">Priti</option>
         <option value="Yuvraj">Yuvraj</option>
+	<option value="Priti">Priti</option>
+        <option value="Pawan">Pawan</option>
       </select>
 
-      <button class="chip active" id="showAllBtn">All activities</button>
-      <button class="chip secondary" id="showFavBtn">Favorites only</button>
+      <button class="chip active" id="showAllBtn">All Activities</button>
+      <button class="chip secondary" id="showFavBtn">Favourites Only</button>
       <button class="chip warn" id="showRankBtn">Ranking</button>
-      <button class="chip" id="resetBtn">Reset all</button>
+      <button class="chip" id="resetBtn">Reset All</button>
     </div>
 
     <div id="app" class="grid"></div>
@@ -231,14 +197,15 @@ const activities = [
   {name:"Himeji Castle", city:"Himeji", desc:"Japan’s famous white castle and a UNESCO World Heritage Site.", why:"It is one of the best preserved castles in Japan and a great option if your family enjoys history and iconic landmarks.", img:"images/himeji-castle.jpg", links:[["Official tourism","https://visit-himeji.com/en/sightseeing/himeji-castle/"],["Travel Japan","https://www.japan.travel/en/spot/1030/"]]}
 ];
 
-const personNames = {Priti:"Priti", Yuvraj:"Yuvraj"};
+const personNames = {Priti:"Priti", Yuvraj:"Yuvraj", Pawan:"Pawan"};
 const state = JSON.parse(localStorage.getItem('japan-picker-state') || '{}');
 let mode = 'all';
 
 function ensureState(activityName){
-  state[activityName] = state[activityName] || {Priti:{}, Yuvraj:{}};
+  state[activityName] = state[activityName] || {Priti:{}, Yuvraj:{}, Pawan:{}};
   state[activityName].Priti = state[activityName].Priti || {};
   state[activityName].Yuvraj = state[activityName].Yuvraj || {};
+  state[activityName].Pawan = state[activityName].Pawan || {};
   return state[activityName];
 }
 function save(){ localStorage.setItem('japan-picker-state', JSON.stringify(state)); }
@@ -264,6 +231,7 @@ function voteCount(activityName){
   let total = 0;
   if(s.Priti.choice === 'yes') total += 1;
   if(s.Yuvraj.choice === 'yes') total += 1;
+  if(s.Pawan.choice === 'yes') total += 1;
   return total;
 }
 function favCount(activityName){
@@ -271,6 +239,7 @@ function favCount(activityName){
   let total = 0;
   if(s.Priti.fav) total += 1;
   if(s.Yuvraj.fav) total += 1;
+  if(s.Pawan.fav) total += 1;
   return total;
 }
 function personChoice(activityName, person){
@@ -294,9 +263,9 @@ function renderCards(){
     const noActive = personChoice(a.name, person) === 'no' ? 'active' : '';
     const favActive = personFav(a.name, person) ? 'active' : '';
     const s = ensureState(a.name);
-    const votes = `${s.Priti.choice === 'yes' ? 'Priti ✓' : 'Priti —'} · ${s.Yuvraj.choice === 'yes' ? 'Yuvraj ✓' : 'Yuvraj —'}`;
+    const votes = `${s.Yuvraj.choice === 'yes' ? 'Yuvraj ✓' : 'Yuvraj —'}  |  ${s.Priti.choice === 'yes' ? 'Priti ✓' : 'Priti —'}  |  ${s.Pawan.choice === 'yes' ? 'Pawan ✓' : 'Pawan —'}`;
 
-    return
+    return `
       <article class="card">
         <div class="img" style="background-image:url('${a.img}')"></div>
         <div class="content">
@@ -334,9 +303,11 @@ function renderRanking(){
       const s = ensureState(a.name);
       const PritiYes = s.Priti.choice === 'yes' ? 1 : 0;
       const YuvrajYes = s.Yuvraj.choice === 'yes' ? 1 : 0;
-      const PritiYes = s.Priti.fav ? 1 : 0;
-      const YuvrajYes = s.Yuvraj.fav ? 1 : 0;
-      return { ...a, yesTotal: PritiYes + YuvrajYes, favTotal: PritiFav + YuvrajFav };
+      const PawanYes = s.Pawan.choice === 'yes' ? 1 : 0;
+      const PritiFav = s.Priti.fav ? 1 : 0;
+      const YuvrajFav = s.Yuvraj.fav ? 1 : 0;
+      const PawanFav = s.Pawan.fav ? 1 : 0;
+      return { ...a, yesTotal: PritiYes + YuvrajYes + PawanYes, favTotal: PritiFav + YuvrajFav + PawanFav };
     })
     .filter(a => a.yesTotal > 0 || a.favTotal > 0)
     .sort((a,b) => (b.favTotal - a.favTotal) || (b.yesTotal - a.yesTotal) || a.name.localeCompare(b.name));
@@ -344,7 +315,7 @@ function renderRanking(){
   const voted = ranked.reduce((acc,a) => acc + a.yesTotal, 0);
   const favs = ranked.reduce((acc,a) => acc + a.favTotal, 0);
 
-  summaryLine.textContent = `${personNames[person]} is currently voting. Total YES votes recorded: ${voted}. Total FAVORITES recorded: ${favs}.`;
+  summaryLine.textContent = `${personNames[person]} is currently voting  |  Total YES votes recorded: ${voted} | Total FAVOURITES recorded: ${favs}`;
 
   ranking.innerHTML = ranked.length ? ranked.map((a, idx) => `
     <div class="rank">
