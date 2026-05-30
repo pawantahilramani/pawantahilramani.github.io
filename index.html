@@ -344,7 +344,7 @@ function renderRanking(){
   const voted = ranked.reduce((acc,a) => acc + a.yesTotal, 0);
   const favs = ranked.reduce((acc,a) => acc + a.favTotal, 0);
 
-  summaryLine.textContent = `${personNames[person]} is currently selected. Total yes votes recorded: ${voted}. Total favorite marks recorded: ${favs}.`;
+  summaryLine.textContent = `${personNames[person]} is currently voting. Total YES votes recorded: ${voted}. Total FAVORITES recorded: ${favs}.`;
 
   ranking.innerHTML = ranked.length ? ranked.map((a, idx) => `
     <div class="rank">
@@ -355,7 +355,7 @@ function renderRanking(){
       <div class="small">Yes votes: ${a.yesTotal} · Favorites: ${a.favTotal}</div>
       <div class="small" style="margin-top:6px">${a.desc}</div>
     </div>
-  `).join('') : `<div class="small">Vote on activities to generate a ranking.</div>`;
+  `).join('') : `<div class="small">YOU ARE GOING TO HAVE AN AMAZING TRIP!</div>`;
 }
 
 function render(){
